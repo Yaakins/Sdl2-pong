@@ -14,7 +14,7 @@ class Game():
         self.screen = self.window.get_surface()
     
         self.ball = Ball(self, Vector(self.size.x/2, self.size.y/2))
-        self.board = Board(self, Vector(20, self.size.y/2))
+        self.boards = [Board(self, Vector(30, self.size.y/2)), Board(self, Vector(self.size.x-30, self.size.y/2))]
 
         self.last_tick = sdl2.timer.SDL_GetTicks()
     
@@ -22,11 +22,17 @@ class Game():
         ext.fill(self.screen, ext.Color(0, 0, 0))
 
         self.ball.render(self.screen)
-        self.board.render(self.screen)
+        for board in self.boards:
+            board.render(self.screen)
     
     def tick(self, n):
         if sdl2.timer.SDL_GetTicks() - self.last_tick < 1000/n:
             sdl2.timer.SDL_Delay(int(self.last_tick + 1000/n - sdl2.timer.SDL_GetTicks()))
+
+    def game_over(self, team):
+        print(f"{team} team won!")
+        self.ball.pos = Vector(self.size.x/2, self.size.y/2)
+        self.ball.moving = False
 
     def run(self):
         self.window.show()
@@ -37,7 +43,8 @@ class Game():
                     ext.quit()
                     sys.exit()
 
-            self.board.move(Vector(self.board.pos.x, ext.mouse.mouse_coords()[1]))
+            for board in self.boards:
+                board.move(Vector(board.pos.x, ext.mouse.mouse_coords()[1]))
             self.ball.update()        
             
             self.render()

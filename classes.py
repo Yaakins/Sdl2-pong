@@ -24,14 +24,14 @@ class Board():
         self.height = 150
 
     def move(self, npos):
-        if npos.x >=  self.master.size.y - self.height/2:
-            npos.x = self.master - self.height/2
-        elif npos.x <= self.height/2:
-            npos.x = self.height/2
+        if npos.y >=  self.master.size.y - self.height/2:
+            npos.y = self.master.size.y - self.height/2
+        elif npos.y <= self.height/2:
+            npos.y = self.height/2
         self.pos = npos
     
     def render(self, surface):
-        ext.draw.fill(surface, ext.Color(255, 255, 255), (self.pos.x, self.pos.y, 20, 150))
+        ext.draw.fill(surface, ext.Color(255, 255, 255), (self.pos.x - 10, self.pos.y - self.height/2, 20, self.height))
 
 class Ball():
     def __init__(self, master, pos):
@@ -51,6 +51,10 @@ class Ball():
             self.pos += self.velocity
             self.velocity.x *= -1
             touched_wall = True
+        for board in self.master.boards:
+            if board.pos.x - 10 < (self.pos + self.velocity).x < board.pos.x + 10 and board.pos.y - board.height/2 < (self.pos + self.velocity).y < board.pos.y + board.height/2:
+                touched_wall = True
+                self.velocity.x *= -1
         if not touched_wall:
             self.pos += self.velocity
         
