@@ -1,4 +1,4 @@
-import sdl2, sys, time
+import sdl2, sys, ctypes
 import sdl2.ext as ext
 from classes import * 
 
@@ -34,6 +34,21 @@ class Game():
         self.ball.pos = Vector(self.size.x/2, self.size.y/2)
         self.ball.moving = False
 
+    def handle_keys(self):
+        keys = sdl2.keyboard.SDL_GetKeyboardState(None)
+        if keys[sdl2.SDL_SCANCODE_W]:
+            self.boards[0].move(Vector(self.boards[0].pos.x, self.boards[0].pos.y - 1.5))
+        if keys[sdl2.SDL_SCANCODE_S]:
+            self.boards[0].move(Vector(self.boards[0].pos.x, self.boards[0].pos.y + 1.5))
+        if keys[sdl2.SDL_SCANCODE_UP]:
+            self.boards[1].move(Vector(self.boards[1].pos.x, self.boards[1].pos.y - 1.5))
+        if keys[sdl2.SDL_SCANCODE_DOWN]:
+            self.boards[1].move(Vector(self.boards[1].pos.x, self.boards[1].pos.y + 1.5))
+        
+        if keys[sdl2.SDL_SCANCODE_SPACE]:
+            self.ball.moving = True
+
+
     def run(self):
         self.window.show()
         while True:
@@ -43,8 +58,7 @@ class Game():
                     ext.quit()
                     sys.exit()
 
-            for board in self.boards:
-                board.move(Vector(board.pos.x, ext.mouse.mouse_coords()[1]))
+            self.handle_keys()
             self.ball.update()        
             
             self.render()

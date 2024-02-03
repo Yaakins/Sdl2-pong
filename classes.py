@@ -40,23 +40,27 @@ class Ball():
         self.radius = 10
 
         self.velocity = Vector(1, 1)
+        self.moving = False
     
     def update(self):
-        touched_wall = False
-        if (self.pos + self.velocity).y > self.master.size.y or (self.pos + self.velocity).y < 0:
-            self.pos += self.velocity
-            self.velocity.y *= -1
-            touched_wall = True
-        if (self.pos + self.velocity).x > self.master.size.x or (self.pos + self.velocity).x < 0:
-            self.pos += self.velocity
-            self.velocity.x *= -1
-            touched_wall = True
-        for board in self.master.boards:
-            if board.pos.x - 10 < (self.pos + self.velocity).x < board.pos.x + 10 and board.pos.y - board.height/2 < (self.pos + self.velocity).y < board.pos.y + board.height/2:
+        if self.moving:
+            touched_wall = False
+            if (self.pos + self.velocity).y > self.master.size.y or (self.pos + self.velocity).y < 0:
+                self.pos += self.velocity
+                self.velocity.y *= -1
                 touched_wall = True
-                self.velocity.x *= -1
-        if not touched_wall:
-            self.pos += self.velocity
+            if (self.pos + self.velocity).x > self.master.size.x:
+                self.master.game_over("left")
+                touched_wall = True
+            elif  (self.pos + self.velocity).x < 0:
+                self.master.game_over("right")
+                touched_wall = True
+            for board in self.master.boards:
+                if board.pos.x - 10 < (self.pos + self.velocity).x < board.pos.x + 10 and board.pos.y - board.height/2 < (self.pos + self.velocity).y < board.pos.y + board.height/2:
+                    touched_wall = True
+                    self.velocity.x *= -1
+            if not touched_wall:
+                self.pos += self.velocity
         
     
     def render(self, surface):
